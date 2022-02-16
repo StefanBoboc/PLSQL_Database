@@ -1,0 +1,1605 @@
+--|=======================|
+--|      PROIECT SGBD     |
+--|     Ianuarie 2022     |
+--|=======================|
+
+--EX.4 & EX.5
+create table CLIENT(
+    client_id number(6) primary key,
+    lastname varchar2(30) not null,
+    firstname varchar2(30) not null,
+    email varchar2(25) not null,
+    birth_date date,
+    unique (email)
+);
+
+insert into CLIENT values(10,'Pop','Alex','popa@gmail.com',null);
+insert into CLIENT values(20,'Ionescu','Ana','ionescu.a@gmail.com',to_date('18-02-1999','DD-MM-YYYY'));
+insert into CLIENT values(30,'Gabor','Mara','gabor.m@gmail.com',to_date('06-12-1987','DD-MM-YYYY'));
+insert into CLIENT values(40,'Suciu','Matei','suciu.m@gmail.com',to_date('18-05-2001','DD-MM-YYYY'));
+insert into CLIENT values(50,'Avram','George','avram.g@gmail.com',null);
+insert into CLIENT values(60,'Pop','Alex','popa.a@gmail.com',null);
+insert into CLIENT values(70,'Mincu','Daria','mincu.d@yahoo.com',to_date('28-09-2000','DD-MM-YYYY'));
+
+select * from client;
+
+create table CARD(
+    card_id number(6) primary key,
+    expiration_month number(2) not null,
+    expiration_year number(2) not null,
+    brand varchar2(15) not null,
+    client_id number(6) unique,
+    constraint FK_client_card foreign key(client_id) references CLIENT(client_id)
+);
+
+insert into CARD values(1,'09','23','Visa',30);
+insert into CARD values(2,'04','21','Mastercard',50);
+insert into CARD values(3,'07','22','Mastercard',70);
+insert into CARD values(4,'11','21','Citibank',60);
+insert into CARD values(5,'04','23','Visa',40);
+insert into CARD values(6,'01','24','AmericanExpress',20);
+
+select * from card;
+
+create table TYPE(
+    type_id number(6) primary key,
+    type_name varchar2(10) not null
+);
+
+insert into TYPE values(1,'absurd');
+insert into TYPE values(2,'grotesque');
+insert into TYPE values(3,'satire');
+insert into TYPE values(4,'comedy');
+insert into TYPE values(5,'tragic');
+insert into TYPE values(6,'drama');
+
+select * from type;
+
+create table PRODUCERS(
+    prod_id number(6) primary key,
+    director varchar(25) not null,
+    screenwriter varchar(25) not null
+);
+
+insert into PRODUCERS values(1,'Felix Alexa', 'Alex Ifrim');
+insert into PRODUCERS values(2,'Sica Alexandrescu', 'Vlad Musteriu');
+insert into PRODUCERS values(3,'Mara Barbu', 'Mara Barbu');
+insert into PRODUCERS values(4,'Mihai Bendeac', 'Alexandra Matei');
+insert into PRODUCERS values(5,'Sergiu Nicolaescu', 'Dan Nasta');
+
+select * from producers;
+
+create table SHOW(
+    show_id number(6) primary key,
+    show_title varchar2(35) not null unique,
+    duration number(1) not null,
+    rating number(2,1),
+    launch_year varchar2(4) not null,
+    price number(5,1) not null,
+    type_id number(6),
+    prod_id number(6),
+    constraint FK_type_show foreign key(type_id) references TYPE(type_id),
+    constraint FK_producers_show foreign key(prod_id) references PRODUCERS(prod_id),
+    constraint CONS_duration check (duration <= 5 and duration >= 1),
+    constraint CONS_rating check (rating <= 5 and rating >= 1)
+);
+
+insert into SHOW values(10,'Divort in ziua nuntii', 2, 3, 2002, 50, 4, 3);
+insert into SHOW values(11,'Ursul', 3, 3.5, 2010, 20, 2, 3);
+insert into SHOW values(12,'Necasatoria', 2, 4, 2010, 15, 5, 2);
+insert into SHOW values(13,'Cursa de soareci', 2, 2, 1999, 33, 6, 3);
+insert into SHOW values(14,'O noapte furtunoasa', 3, 5, 1999, 45, 4, 1);
+insert into SHOW values(15,'Doi pe o banca', 2, null, 2019, 27, 4, 4);
+insert into SHOW values(16,'Colectionarul', 2, null, 2021, 16, 4, 2);
+insert into SHOW values(17,'Meciul de comedie', 2, 4, 2011, 17, 2, 2);
+insert into SHOW values(18,'Avarul', 2, 4, 2021, 28, 04, 04);
+insert into SHOW values(19,'Salut', 2, 3, 2018, 20, 04, 02);
+insert into SHOW values(20,'Inca una si ma duc', 2, 3, 2018, 20, 04, 02);
+
+select * from show;
+
+create table LOCATION(
+    location_id number(6) primary key,
+    street varchar2(20) not null,
+    city varchar2(25) not null,
+    postal_code number(6)
+);
+
+insert into LOCATION values(1,'Lalelelor','Bucuresti',null);
+insert into LOCATION values(2,'Florilor','Bucuresti',null);
+insert into LOCATION values(3,'Ghioceilor','Bucuresti',null);
+insert into LOCATION values(4,'Bujorilor','Cluj',null);
+insert into LOCATION values(5,'Frunzelor','Brasov',null);
+
+select * from location;
+
+create table THEATER(
+    theater_id number(6) primary key,
+    theater_name varchar2(25) not null,
+    manager varchar2(20),
+    location_id number(6),
+    constraint FK_location_theater foreign key(location_id) references LOCATION(location_id)
+);
+
+insert into THEATER values(10,'Teatrul Judetean Brasov','Zaharia Herdelea',5);
+insert into THEATER values(20,'Teatrul Judetean Cluj','Vasile Baciu',4);
+insert into THEATER values(30,'Teatrul de Comedie Brasov','Stefan Gheorghidiu',5);
+insert into THEATER values(40,'Teatrul Artcub','Otilia Marculescu',3);
+insert into THEATER values(50,'Teatrul Nottara','Nechifor Lipan',1);
+insert into THEATER values(60,'Teatrul Guguta','Lica Samadau',2);
+insert into THEATER values(70,'Teatrul Guguta','Vitoria Lipan',3);
+insert into THEATER values(80,'Verde','Ghita Pristanda',3);
+
+select * from theater;
+
+create table ACTOR(
+    actor_id number(6) primary key,
+    actor_lastname varchar(20) not null,
+    actor_firstname varchar(20) not null,
+    awards number(2)
+);
+
+insert into ACTOR values(10,'Morgenstern','Maia',2);
+insert into ACTOR values(20,'Malaele','Horatiu',3);
+insert into ACTOR values(30,'Iures','Marcel',1);
+insert into ACTOR values(40,'Alexandru','Alex', null);
+insert into ACTOR values(50,'Arsinel','Alexandru',2);
+
+select * from actor;
+
+create table RESERVATION(
+    reservation_id number(6) primary key,
+    show_id number(6) not null,
+    client_id number(6) not null,
+    booking_date date not null,
+    constraint FK_client_reservation foreign key(client_id) references CLIENT(client_id),
+    constraint FK_show_reservation foreign key(show_id) references SHOW(show_id)
+);
+
+insert into RESERVATION values(101, 10, 10, to_date('04-11-2021','DD-MM-YYYY'));
+insert into RESERVATION values(102, 11, 10, to_date('13-10-2021','DD-MM-YYYY'));
+insert into RESERVATION values(103, 12, 10, to_date('25-03-2021','DD-MM-YYYY'));
+insert into RESERVATION values(104, 10, 70, to_date('04-12-2021','DD-MM-YYYY'));
+insert into RESERVATION values(105, 11, 70, to_date('28-08-2021','DD-MM-YYYY'));
+insert into RESERVATION values(106, 12, 70, to_date('11-01-2021','DD-MM-YYYY'));
+insert into RESERVATION values(107, 13, 70, to_date('14-08-2021','DD-MM-YYYY'));
+insert into RESERVATION values(108, 17, 20, to_date('07-12-2021','DD-MM-YYYY'));
+insert into RESERVATION values(109, 17, 20, to_date('12-08-2021','DD-MM-YYYY'));
+insert into RESERVATION values(110, 10, 40, to_date('23-10-2021','DD-MM-YYYY'));
+insert into RESERVATION values(111, 13, 20, to_date('14-08-2021','DD-MM-YYYY'));
+insert into RESERVATION values(112, 10, 10, to_date('01-06-2021','DD-MM-YYYY'));
+insert into RESERVATION values(113, 10, 70, to_date('14-10-2021','DD-MM-YYYY'));
+insert into RESERVATION values(114, 10, 60, to_date('30-10-2021','DD-MM-YYYY'));
+insert into RESERVATION values(115, 10, 40, to_date('15-06-2020','DD-MM-YYYY'));
+insert into RESERVATION values(116, 10, 30, to_date('05-06-2020','DD-MM-YYYY'));
+
+select * from reservation;
+
+create table COLLABORATION(
+    collaboration_id number(6) primary key,
+    show_id number(6) not null,
+    theater_id number(6) not null,
+    actor_id number(6) not null,
+    constraint FK_show_collaboration foreign key(show_id) references SHOW(show_id),
+    constraint FK_actor_collaboration foreign key(actor_id) references ACTOR(actor_id),
+    constraint FK_theater_collaboration foreign key(theater_id) references THEATER(theater_id)
+);
+
+insert into COLLABORATION values(101,10,10,20);
+insert into COLLABORATION values(102,10,20,20);
+insert into COLLABORATION values(103,10,40,20);
+insert into COLLABORATION values(104,11,30,30);
+insert into COLLABORATION values(105,12,40,30);
+insert into COLLABORATION values(106,12,40,30);
+insert into COLLABORATION values(107,12,60,40);
+insert into COLLABORATION values(108,12,50,40);
+insert into COLLABORATION values(109,16,10,40);
+insert into COLLABORATION values(110,17,10,20);
+
+select * from collaboration;
+
+--================
+--================
+--================
+
+--EX.6
+--Realizati un subprogram care primește un parametru un număr
+--Parametrul poate avea valoarea 1 sau 2:
+--- pentru 1 va afișa numele fiecărui brand de carduri și de câte ori apare el în tabelă;
+--- pentru 2 va afișa numele fiecărui oraș și de câte ori apare el în tabelă;
+
+--REZOLVARE
+CREATE OR REPLACE PROCEDURE ex_6 (
+    comanda NUMBER  --parametrul care trebuie sa primeasca valoari de la 1 la 2
+) 
+ IS
+    
+    --cursor dinamic
+    --il vom folosi pentru a lua date ori din 'card' ori din 'location'
+    --in functie de valoarea parametrului 'comanda'
+    TYPE cursor_date IS REF CURSOR;
+    c_date       cursor_date;
+    
+    TYPE t_indexat IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
+    TYPE t_imbricat IS TABLE OF VARCHAR2(50);
+    
+    --tablou indexat pentru numarul de aparitii al datelor (brand/city)
+    v_aparitii   t_indexat;
+    --tablou imbricat - salvam datele o singura data
+    v_date       t_imbricat := t_imbricat();
+    
+    text         VARCHAR2(50);          --variabila va primi valorile din cursor
+    aux          VARCHAR2(50) := 'a';   --vom salva valorile din 'v_date' o singura data
+    i            NUMBER := 0;           --contor pentru numarul de valori din tabele
+    
+    parametru_invalid    EXCEPTION;     --exceptie pentru parametru diferit de 1 si 2
+BEGIN
+    --pentru valoarea 1 cursorul contine brandurile
+    IF comanda = 1 THEN
+        OPEN c_date FOR SELECT brand
+                        FROM card
+                        ORDER BY brand;
+                        
+    --pentru valoarea 2 cursorul contine orasele
+    ELSIF comanda = 2 THEN
+        OPEN c_date FOR SELECT city
+                        FROM location
+                        ORDER BY city;
+    ELSE
+        RAISE parametru_invalid;
+    END IF;
+
+    LOOP
+        FETCH c_date INTO text;
+        EXIT WHEN c_date%notfound; --parasim loop-ul cand nu mai avem date in cursor
+        
+        IF aux != text THEN     --daca am mai avut respectiva informatie (brand/city)
+            aux := text;        --vom tine minte valoarea prin care trecem
+            
+            i := i + 1;         --crestem contorul cu 1
+            v_date.extend;      --marim tabloul imbricat
+            v_date(i) := text;  --adaugam valoarea gasita
+            
+            v_aparitii(i) := 1; --valoarea gasita a aparut o data
+            
+        ELSIF aux = text THEN   --daca intalnim din noua aceeasi valoare ii crestem nr de aparitii
+            v_aparitii(i) := v_aparitii(i) + 1;
+        END IF;
+    END LOOP;
+
+    CLOSE c_date;   --inchidem cursorul
+    
+    --afisam datele din cele doua tablouri
+    FOR j IN 1..i LOOP 
+    dbms_output.put_line(v_date(j) || ' apare de ' || v_aparitii(j) || ' ori');
+    END LOOP;
+
+EXCEPTION
+    WHEN parametru_invalid THEN
+        raise_application_error(-20001, 'Parametru invalid. Introduceti ca parametru "1" sau "2"');
+END ex_6;
+/
+
+--APELARE
+/
+BEGIN
+    ex_6(1);
+--    ex_6(2);
+--    ex_6(3);
+END;
+/
+
+--================
+--================
+--================
+
+--EX.7
+--Afisarea spectacolelor in ordine descrescatoare al incasarilor lor realizate 
+--pana in acest moment. Acestea vor fi organizate pe genurile de spectacol existente. 
+--La finalul fiecarui top se va afisa numarul total de incasari.
+
+--REZOLVARE
+CREATE OR REPLACE PROCEDURE ex_7 IS
+    --cursor ce contine cate spectacole fac parte dintr-un gen
+    CURSOR cursor_type IS(
+        SELECT t.type_id, MAX(t.type_name), COUNT(s.show_id)
+        FROM type t, show s
+        WHERE t.type_id = s.type_id (+)
+        GROUP BY t.type_id
+    );
+    
+    --cursor cu numele spectacolelor, genul lor si pretul unui bilet
+    CURSOR cursor_show IS
+    SELECT ss.show_id, ss.show_title, ss.type_id, ss.price * m.n total_price --calcularea incasarilor per spectacol
+    FROM show ss, 
+            --calculam de cate ori s-a rezervat bilet pt fiecare spectacol
+        (SELECT s.show_id idul, (SELECT COUNT(r.show_id)
+                                FROM reservation r
+                                WHERE r.show_id = s.show_id) n
+        FROM show s) m
+    WHERE ss.show_id = m.idul
+    ORDER BY total_price DESC;  --ordonam dupa incasari
+        
+    --variabile pentru datele din cursorul 'cursor_type'
+    v_t_id        type.type_id%TYPE;
+    v_t_name      type.type_name%TYPE;
+    v_t_nr        show.show_id%TYPE;
+        
+    --variabile pentru datele din cursorul 'cursor_show'
+    v_s_id        show.show_id%TYPE;
+    v_s_title     show.show_title%TYPE;
+    v_s_type_id   show.type_id%TYPE;
+    v_s_price     NUMBER;
+    total         NUMBER;    --variabila pentru calculul incasarilor per gen
+BEGIN
+    --cursoare imbricate
+    OPEN cursor_type;   --deschidem cursorul 'cursor_type'
+    
+    LOOP
+        FETCH cursor_type 
+        INTO v_t_id, v_t_name, v_t_nr;  --salvam informatiile in variabile
+        
+        EXIT WHEN cursor_type%notfound; --parcurgem intreg cursorul de genuri
+                                        --si pentru fiecare gen afisam informatiile stocate in
+                                        --cursorul 'cursor_show'
+                                        
+        dbms_output.put_line('Genul spectacolului: ' || v_t_name);
+        dbms_output.put_line('============================');
+        
+        total := 0; --suma este initial zero
+        
+        IF v_t_nr = 0 THEN
+            --daca nu avem spectacole dintr-un gen afisam un mesaj corespunzator
+            dbms_output.put_line('Nu avem filme la această categorie.');
+        ELSE
+            OPEN cursor_show;   --deschidem cursorul 'cursor_show'
+            
+            LOOP
+                FETCH cursor_show 
+                INTO v_s_id, v_s_title, v_s_type_id, v_s_price; --salvam informatiile in variabile
+                EXIT WHEN cursor_show%notfound;                 -- parcurgem intreg cursorul cu angajati
+                
+                --afisam informatiile corespunzatoare genului la care am ajuns
+                IF v_t_id = v_s_type_id THEN
+                    dbms_output.put_line(v_s_title || ' ' || v_s_price || ' RON');
+                    total := total + v_s_price; --aduna incasarile totale ale genului
+                END IF;
+            END LOOP;
+            
+            CLOSE cursor_show;  --inchidem cursorul 'cursor_show'
+        END IF;
+        
+        --afisam incasarile totale ale genului
+        dbms_output.put_line('----------');
+        dbms_output.put_line('Total incasari: ' || total);
+        dbms_output.new_line;
+    END LOOP;
+
+    CLOSE cursor_type;  --inchidem cursorul 'cursor_type'
+END ex_7;
+/
+
+--APELARE
+/
+BEGIN
+    ex_7();
+END;
+/
+
+--================
+--================
+--================
+
+--EX.8
+--Pentru un spectacol citit sa se returneze o lista cu lunile in care 
+--s-au vandut numar maxim de bilete si o variabila cu media varstei spectatorilor
+--(varsta lor de la momentul actizitionarii biletului).
+--Rezultatul va fi de tipul 'rezultat_ex8':
+/
+CREATE OR REPLACE TYPE lista_luni IS
+    TABLE OF NUMBER(4);
+/
+CREATE OR REPLACE TYPE rezultat_ex8 AS OBJECT (
+    luna           lista_luni,
+    medie_varsta   NUMBER
+);
+/
+--Daca la un spectacol nu s-au cumparat bilete lista va avea ca singur element
+--un zero, iar variabila va fi tot zero.
+
+
+--REZOLVARE
+CREATE OR REPLACE FUNCTION ex_8 (
+    v_title show.show_title%TYPE    --primeste ca parametru numele spectacolului
+)
+ RETURN rezultat_ex8 IS  --returneaza un rezultat de tipul 'rezultat_ex8'
+    
+    --cursor ce contine data rezervarii biletelor la spectacol si varsta spectatorilor
+    CURSOR c IS
+        SELECT r.booking_date, round((booking_date - birth_date) / 365.25, 0)
+        FROM show s, reservation r, client c
+        WHERE s.show_id = r.show_id
+            AND c.client_id = r.client_id
+            AND s.show_id = (SELECT show_id
+                            FROM show
+                            WHERE upper(v_title) = upper(show_title))   --gasim id-ul spectacolului primit ca parametru
+        ORDER BY booking_date;  --ordonam in functie de data rezervarii
+    
+    --vector ce va pastra nr de bilete pentru fiecare luna
+    TYPE t_aparitii IS VARRAY(12) OF NUMBER(6);
+    
+    --variabile pentru accesarea datelor din cursor
+    v_booking    reservation.booking_date%TYPE;  --memoreaza data achizitionarii unui bilet
+    v_age        NUMBER; --memoreaza varsta unui participant
+    
+    --vector initializat cu 0 bilete pentru fiecare luna 
+    v_aparitii   t_aparitii := t_aparitii(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    
+    --lista unde se vor pastra lunile cu acelasi numar maxim de bilete vandute
+    f_luna       lista_luni := lista_luni();
+    
+    maxim        NUMBER := -1; --maximul de bilete vandute
+    c_luna       NUMBER := 0;  --numarul de luni cu acelasi maxim
+    media        NUMBER := 0;  --suma varstelor
+    cc           NUMBER := 0;  --cate persoane avem
+    i            NUMBER;
+    k            NUMBER;
+    
+    --variabila ce va verifica daca spectacolul a avut sau nu bilete vandute
+    if_record    BOOLEAN := false;
+BEGIN 
+    --tratare exceptie NO_DATA_FOUND
+    SELECT COUNT(1)
+    INTO k
+    FROM show
+    WHERE upper(v_title) = upper(show_title);
+
+    IF k <= 0 THEN
+        RAISE no_data_found;
+    END IF;
+
+    OPEN c; --deschidem cursorul
+    
+    LOOP
+        FETCH c INTO v_booking, v_age;  --pastram datele de pe o linie in doua variabile        
+        EXIT WHEN c%notfound;           --ne oprim cand parcurgem tot cursorul
+        
+        if_record := true;  --nu s-a inchis cursorul => inseamna ca avem date (s-au vandut bilete)
+        
+        i := to_number(to_char(extract(MONTH FROM v_booking))); --extragem luna din data rezervarii
+        v_aparitii(i) := v_aparitii(i) + 1;                     --crestem nr de bilete vandute in luna respectiva
+
+        --cautam maximul de bilete vandu-te intr-o luna
+        IF ( maxim < v_aparitii(i) ) THEN
+            maxim := v_aparitii(i);
+        END IF;
+        
+        --calculam nr de persoane care au fost la spectacol si suma varstelor
+        IF ( v_age IS NOT NULL ) THEN
+            cc := cc + 1;
+            media := media + to_number(v_age);
+        END IF;
+    END LOOP;
+
+    CLOSE c;    --inchidem cursorul
+
+    --adaugam fiecare luna care are nr maxim de bilete vandute
+    --in lista 'f_luna'
+    FOR j IN v_aparitii.first..v_aparitii.last LOOP 
+        IF ( v_aparitii(j) = maxim ) THEN
+            f_luna.extend;
+            c_luna := c_luna + 1;
+            f_luna(c_luna) := j;
+        END IF;
+    END LOOP;
+
+    --returnam lista cu lunile cu nr maxim de bilete vandute si
+    --media varstei spectatorilor 
+    --(asta daca au existat bilete vandute la spectacol)
+    IF if_record = false THEN
+        RETURN rezultat_ex8(lista_luni(0), 0);
+    END IF;
+
+    RETURN rezultat_ex8(f_luna, round(media / cc, 2));
+    
+EXCEPTION
+    WHEN no_data_found THEN
+        raise_application_error(-20001, 'Nu exista spectacol cu titlul dat.');
+END ex_8;
+/
+
+--APELARE
+/
+DECLARE
+    v_title   show.show_title%TYPE := '&p_title';   --citim titlul unui spectacol
+    raspuns   rezultat_ex8; --declaram o variabila de tipul returnat de functie 'rezultat_ex8'
+    i         NUMBER;
+BEGIN
+    raspuns := ex_8(v_title);  --apelam functia 
+    
+    --afisam titlul spectacolului citit
+    dbms_output.put_line('Lunile cu cele mai multe vanzari pentru spectacolul "' || v_title || '" sunt:');
+    
+    --afisam lunile gasite
+    FOR i IN raspuns.luna.first..raspuns.luna.last LOOP 
+        dbms_output.put_line('luna a ' || raspuns.luna(i) || '-a');
+    END LOOP;
+    
+    --afisam media varstelor spectatorilor
+    dbms_output.put_line('Varsta medie a spectatorilor este de '
+                         || raspuns.medie_varsta
+                         || ' ani');
+END;
+/
+
+--================
+--================
+--================
+
+--EX.9
+--Realizaii o procedura care pentru numele unui teatru dat ca parametru va determina 
+--valorile:
+--specific = specificul teatrului (i.e. ce tipuri de spectacole are cel mai mult; 
+--daca sunt mai multe spectacole cu acelasi specific se va alege ultimul gasit); 
+--maxim = numarul maxim de spectacole de la aceeasi echipa de producatori 
+--din cadrul teatrului citit;
+--In final obtineti lista producatorilor care au mai mult de 'maxim' spectacole 
+--si toate de genul 'specific'.
+
+--REZOLVARE
+CREATE OR REPLACE PROCEDURE ex_9 (
+    v_nume_teatru theater.theater_name%TYPE --primeste ca parametru numele teatrului
+)  
+ IS
+    
+    --cursor ce contine id-ul producatorilor si id-ul tipului
+    --spectacolelor ce se joaca la teatrul citit
+    CURSOR c_1 IS
+        SELECT p.prod_id   prod, t.type_id   typess
+        FROM theater t, collaboration c, show s, producers p, type t
+        WHERE c.theater_id = t.theater_id
+            AND c.show_id = s.show_id
+            AND s.prod_id = p.prod_id
+            AND t.theater_id = (SELECT theater_id
+                                FROM theater
+                                WHERE upper(theater_name) = upper(v_nume_teatru)
+                                )   --obtinem id-ul spectacolului citit
+            AND s.type_id = t.type_id
+        ORDER BY
+            s.show_id; --ordonam credcator dupa id-ul spectacolului 
+    
+    --cursor ce obtine id-ul, directorul si scenaristul unei echipe de producatori
+    --impreuna cu numarul de spectacole pe care le desfasoara de tipul 'c_specific'
+    --tipul de specatcole pe care trebuie sa le numere le primeste prin intermediul 
+    --unui parametru
+    CURSOR c_2 (c_specific NUMBER) IS
+        SELECT p.prod_id id2, MAX(p.director) director, MAX(p.screenwriter) screenw, COUNT(type_id) nr
+        FROM producers   p, show        s
+        WHERE p.prod_id = s.prod_id AND s.type_id = c_specific
+        GROUP BY p.prod_id;
+    
+    TYPE t_producers IS TABLE OF NUMBER(4);
+    TYPE t_types IS TABLE OF NUMBER(4);
+    TYPE t_apar_prod IS TABLE OF NUMBER(4);
+    TYPE t_apar_type IS TABLE OF NUMBER(4);
+    
+    --tablou cu id-urile producatorilor
+    t_prod          t_producers := t_producers();
+    --tablou cu id-urile genurilor de spectacole
+    t_type          t_types := t_types();
+    --tablou pentru a salva numarul de aparitii al valorilor din 't_prod'
+    apar_p          t_apar_prod := t_apar_prod();
+    --tablou pentru a salva numarul de aparitii al valorilor din 't_type'
+    apar_t          t_apar_type := t_apar_type();
+    
+    max_prod        NUMBER := -1;   --salvam id-ul maxim de producatori pentru a extinde lista 'apar_p'
+    max_type        NUMBER := -1;   --salvam id-ul maxim de tipuri pentru a extinde lista 'apar_t'
+    maxim           NUMBER := -1;   --salvam numarul maxim de spectacole la care avem aceeasi producatori in teatrul citit
+    specific        NUMBER := -1;   --salvam id-ul tipului de spectacole care se gasesc cel mai mult la teatrul citit
+    specific_m      NUMBER := -1;   --
+    specific_nume   VARCHAR2(50);   --salvam numele tipului in functie de id-ul gasit
+    k               NUMBER := 0;
+    
+    nimic           BOOLEAN := FALSE;   --verifica daca avem sau nu echipe de profucatori
+    
+    if_found_rec    BOOLEAN := FALSE;   --verifica daca teatrul introdus are sau nu spectacole
+    not_found_rec   EXCEPTION;          --exceptie in cazul in care teatrul nu are spectacole
+BEGIN 
+    --vedem de cate ori apare numele teatrului citit in baza de date
+    SELECT COUNT(1)
+    INTO k
+    FROM theater
+    WHERE upper(theater_name) = upper(v_nume_teatru);
+
+    IF k <= 0 THEN
+        RAISE no_data_found;    --tratare exceptie NO_DATA_FOUND
+    ELSIF k > 1 THEN
+        RAISE too_many_rows;    --tratare exceptie TOO_MANY_ROWS
+    END IF;
+
+    k := 0;  --numaram cate elemente avem in cursorul c_1
+    FOR i IN c_1 
+    LOOP
+        if_found_rec := TRUE;   --daca avem spectacole := TRUE
+        k := k + 1;
+        t_prod.extend;          --extindem tabloul
+        t_prod(k) := i.prod;    --adaugam elementul din cursor
+        
+        --salvam id-ul maxim de producator
+        IF ( max_prod < i.prod ) THEN
+            max_prod := i.prod;
+        END IF;
+
+        t_type.extend;          --extindem tabloul
+        t_type(k) := i.typess;  --adaugam elementul din cursor
+        
+        --salvam id-ul maxim de tip
+        IF ( max_type < i.typess ) THEN
+            max_type := i.typess;
+        END IF;
+
+    END LOOP;
+    
+    --daca nu am avut date/spectacole atunci exceptie
+    IF ( if_found_rec = FALSE ) THEN
+        RAISE not_found_rec;
+    END IF;
+    
+    --initializam tabloul de aparitii 'apar_p' cu zero 
+    FOR i IN 1..max_prod LOOP
+        apar_p.extend;
+        apar_p(i) := 0;
+    END LOOP;
+    
+    --initializam tabloul de aparitii 'apar_t' cu zero 
+    FOR i IN 1..max_type LOOP
+        apar_t.extend;
+        apar_t(i) := 0;
+    END LOOP;
+    
+    --populam tabloul de aparitii 'apar_p' in functie de datele din 't_prod'
+    FOR i IN t_prod.first..t_prod.last LOOP
+        apar_p(t_prod(i)) := apar_p(t_prod(i)) + 1;
+
+        IF ( maxim < apar_p(t_prod(i)) ) THEN
+            maxim := apar_p(t_prod(i));
+        END IF;
+    END LOOP;
+    
+    --populam tabloul de aparitii 'apar_t' in functie de datele din 't_type'
+    FOR i IN t_type.first..t_type.last LOOP
+        apar_t(t_type(i)) := apar_t(t_type(i)) + 1;
+
+        IF ( specific_m < apar_t(t_type(i)) ) THEN
+            specific_m := apar_t(t_type(i));
+            specific := t_type(i);
+        END IF;
+    END LOOP;
+    
+    --salvam in 'specific_nume' denumirea tipului gasit
+    SELECT type_name
+    INTO specific_nume
+    FROM type
+    WHERE type_id = specific;
+    
+    --afisam ce valoare are 'specific' si ce valoare are 'maxim' 
+    dbms_output.put_line('Teatrul "' || v_nume_teatru || '" are:');
+    dbms_output.put_line('- specificul: ' || specific_nume || ';');
+    dbms_output.put_line('- maximul de spectacole ale acelorasi producatori ' || maxim || ';');
+    dbms_output.put_line('Lista producatorilor ' || 'cu mai mult de '
+                         || maxim || ' spectacole '
+                         || specific_nume || ':');
+    
+    --parcurgem cursorul 'c_2' pentru a obtine tabloul producatorilor care
+    --au mai mult de 'maxim' spectacole de tipul 'specific' gasit
+    FOR i IN c_2(specific) LOOP 
+        IF ( i.nr >= maxim ) THEN
+            nimic := TRUE;  --devine true daca avem echipe de producatori
+            dbms_output.put_line(i.director || ' si ' || i.screenw);
+        END IF;
+    END LOOP;
+    
+    --daca nu avem echipe de producatori afisam mesajul...
+    IF ( nimic = FALSE ) THEN
+        dbms_output.put_line('Nu avem echipe de producatori.');
+    END IF;
+
+EXCEPTION
+    WHEN no_data_found THEN
+        raise_application_error(-20001, 'Nu exista teatru cu titlul dat.');
+    WHEN too_many_rows THEN
+        raise_application_error(-20002, 'Mai multe teatre cu acelasi nume.');
+    WHEN not_found_rec THEN
+        raise_application_error(-20003, 'Teatrul citit nu are spectacole.');
+END ex_9;
+/
+
+--APELARE
+/
+BEGIN
+    ex_9('Teatrul Judetean Brasov');
+--    ex_9('Nottara’);
+--    ex_9('Teatrul Artcub’);
+--    ex_9('asd');
+--    ex_9('Teatrul Guguta');
+--    ex_9('Verde');
+END;
+/
+--EX.10
+--Trigger pentru 'client' care permite:
+--- inserarea oricand si afiseaza mesajul 'Inserare...'
+--- actualizarea: 
+--    - in intervalul 08:00-20:00 pentru orice coloana si
+--    afiseaza mesajul 'Actualizare...'
+--- stergerea: 
+--    - de luni pana vineri
+
+CREATE OR REPLACE TRIGGER trigger_ex_10
+  BEFORE INSERT OR 
+         UPDATE OR
+         DELETE 
+         ON client
+BEGIN
+  CASE
+    WHEN INSERTING THEN
+      DBMS_OUTPUT.PUT_LINE('Inserare...');  
+      
+    WHEN UPDATING THEN
+        if(TO_CHAR(SYSDATE,'HH24') BETWEEN 8 AND 20)then
+            DBMS_OUTPUT.PUT_LINE('Actualizare...');
+        else 
+            RAISE_APPLICATION_ERROR(-20001,'Actualizarile sunt permise doar intre 8 si 20'); 
+        end if;
+        
+    WHEN DELETING THEN
+      if(TO_CHAR(SYSDATE,'D') between 2 and 6) then
+        DBMS_OUTPUT.PUT_LINE('Stergere...');
+      else 
+        RAISE_APPLICATION_ERROR(-20002,'Stergerile sunt permise de luni pana vineri'); 
+      end if;
+  END CASE;
+END;
+/
+--TESTARE
+--INSERARE
+insert into CLIENT values(80,'A','a','A.a@yahoo.com',to_date('01-01-1999','DD-MM-YYYY'));
+select * from client;
+--Inserare...
+
+
+--ACTUALIZARE
+--intre 8-20
+update client
+set firstname = 'b'
+where client_id = 80;
+--Actualizare...
+
+--altfel
+update client
+set firstname = 'c'
+where client_id = 80;
+--Actualizarile sunt permise doar intre 8 si 20
+
+
+--STERGERE
+--de luni pana vineri
+delete
+from client
+where client_id = 80;
+--Stergere...
+
+--altfel
+delete
+from client
+where client_id = 80;
+--Stergerile sunt permise de luni pana vineri
+
+rollback;
+drop trigger trigger_ex_10;
+
+--EX.11
+--Trigger ce realizeaza stergeri in cascada. Mai exact:
+--stergerea unui tip din tabela 'type' (tabela parinte)
+--determina stergerea spectacolelor si implicit a colaborarilor
+--si rezervarilor - ce contin spectacolul respectiv.
+
+create or replace trigger trigger_ex_11
+    before delete on type
+    for each row    --pentru fiecare stergere de linie din tabela 'type'
+    
+begin
+    --ciclu cursor cu subcereri ce contine
+    --toate spectacolele de tipul ce urmeaza a fi sters
+    for i in (select s.show_id sh
+                from show s
+                where s.type_id = :old.type_id) loop
+        
+        --stergem colaborarile ce contineau spectacole
+        --de tipul sters
+        delete
+        from collaboration c
+        where c.show_id = i.sh;
+        
+        --stergem rezervarile ce contineau spectacole
+        --de tipul sters
+        delete
+        from reservation r
+        where r.show_id = i.sh; 
+        
+        --stergem spectacolele de tipul sters
+        delete
+        from show s
+        where s.show_id = i.sh;
+    end loop;
+end;
+/
+
+--TESTARE
+select * from type;             --6 inregistrari
+select * from show;             --11 inregistrari
+select * from collaboration;    --10 inregistrari
+select * from reservation;      --16 inregistrari
+
+delete from type
+where type_id = 4;
+
+select * from type;             --5 inregistrari
+select * from show;             --4 inregistrari
+select * from collaboration;    --6 inregistrari
+select * from reservation;      --8 inregistrari
+
+rollback;
+drop trigger trigger_ex_11;
+
+--EX.12
+--Trigger care introduce in tabelul
+--'database_history' date legate de actiunile realizate
+--in baza de date (create/drop/alter).
+create table database_history(
+    user_name   varchar2(50),
+    db_name     varchar2(50),
+    event       varchar2(25),
+    object_name varchar2(30),
+    data        date,
+    ora         varchar2(30)
+);
+
+--REZOLVARE
+/
+create or replace trigger trigger_ex_12
+    AFTER create or drop or alter on schema
+begin
+    insert into database_history
+    values (SYS.LOGIN_USER,SYS.DATABASE_NAME, SYS.SYSEVENT, SYS.DICTIONARY_OBJ_NAME, SYSDATE, TO_CHAR(SYSDATE, 'HH24') ||':'||to_char(sysdate, 'MI'));
+end;
+/
+
+--TESTARE
+--cream un tabel pentru a testa trigger-ul
+create table test_table(
+    numar   number
+);
+
+--adaugam o coloana in plus
+alter table test_table
+add cifra number(1);
+
+--stergem tabelul
+drop table test_table;
+
+--verificam datele stranse in 'database_history'
+select * from database_history;
+
+--stergem trigger-ul 'trig_test' si tabela 'database_history'
+drop trigger trigger_ex_12;
+drop table database_history;
+
+--EX.13
+/
+CREATE OR REPLACE PACKAGE pachet_ex_13 AS
+    PROCEDURE ex_6 (comanda NUMBER);
+
+    PROCEDURE ex_7;
+
+    TYPE rezultat_ex8 IS TABLE OF NUMBER(4);
+    FUNCTION ex_8 (v_title show.show_title%TYPE) RETURN rezultat_ex8;
+
+    PROCEDURE ex_9 (v_nume_teatru theater.theater_name%TYPE);
+END pachet_ex_13;
+/
+CREATE OR REPLACE PACKAGE BODY pachet_ex_13 AS
+    PROCEDURE ex_6 (
+        comanda NUMBER  --parametrul care trebuie sa primeasca valoari de la 1 la 2
+    ) 
+     IS
+        
+        --cursor dinamic
+        --il vom folosi pentru a lua date ori din 'card' ori din 'location'
+        --in functie de valoarea parametrului 'comanda'
+        TYPE cursor_date IS REF CURSOR;
+        c_date       cursor_date;
+        
+        TYPE t_indexat IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
+        TYPE t_imbricat IS TABLE OF VARCHAR2(50);
+        
+        --tablou indexat pentru numarul de aparitii al datelor (brand/city)
+        v_aparitii   t_indexat;
+        --tablou imbricat - salvam datele o singura data
+        v_date       t_imbricat := t_imbricat();
+        
+        text         VARCHAR2(50);          --variabila va primi valorile din cursor
+        aux          VARCHAR2(50) := 'a';   --vom salva valorile din 'v_date' o singura data
+        i            NUMBER := 0;           --contor pentru numarul de valori din tabele
+        
+        parametru_invalid    EXCEPTION;     --exceptie pentru parametru diferit de 1 si 2
+    BEGIN
+        --pentru valoarea 1 cursorul contine brandurile
+        IF comanda = 1 THEN
+            OPEN c_date FOR SELECT brand
+                            FROM card
+                            ORDER BY brand;
+                            
+        --pentru valoarea 2 cursorul contine orasele
+        ELSIF comanda = 2 THEN
+            OPEN c_date FOR SELECT city
+                            FROM location
+                            ORDER BY city;
+        ELSE
+            RAISE parametru_invalid;
+        END IF;
+    
+        LOOP
+            FETCH c_date INTO text;
+            EXIT WHEN c_date%notfound; --parasim loop-ul cand nu mai avem date in cursor
+            
+            IF aux != text THEN     --daca am mai avut respectiva informatie (brand/city)
+                aux := text;        --vom tine minte valoarea prin care trecem
+                
+                i := i + 1;         --crestem contorul cu 1
+                v_date.extend;      --marim tabloul imbricat
+                v_date(i) := text;  --adaugam valoarea gasita
+                
+                v_aparitii(i) := 1; --valoarea gasita a aparut o data
+                
+            ELSIF aux = text THEN   --daca intalnim din noua aceeasi valoare ii crestem nr de aparitii
+                v_aparitii(i) := v_aparitii(i) + 1;
+            END IF;
+        END LOOP;
+    
+        CLOSE c_date;   --inchidem cursorul
+        
+        --afisam datele din cele doua tablouri
+        FOR j IN 1..i LOOP 
+        dbms_output.put_line(v_date(j) || ' apare de ' || v_aparitii(j) || ' ori');
+        END LOOP;
+    
+    EXCEPTION
+        WHEN parametru_invalid THEN
+            raise_application_error(-20001, 'Parametru invalid. Introduceti ca parametru "1" sau "2"');
+    END ex_6;
+    
+    PROCEDURE ex_7 IS
+        --cursor ce contine cate spectacole fac parte dintr-un gen
+        CURSOR cursor_type IS(
+            SELECT t.type_id, MAX(t.type_name), COUNT(s.show_id)
+            FROM type t, show s
+            WHERE t.type_id = s.type_id (+)
+            GROUP BY t.type_id
+        );
+        
+        --cursor cu numele spectacolelor, genul lor si pretul unui bilet
+        CURSOR cursor_show IS
+        SELECT ss.show_id, ss.show_title, ss.type_id, ss.price * m.n total_price --calcularea incasarilor per spectacol
+        FROM show ss, 
+                --calculam de cate ori s-a rezervat bilet pt fiecare spectacol
+            (SELECT s.show_id idul, (SELECT COUNT(r.show_id)
+                                    FROM reservation r
+                                    WHERE r.show_id = s.show_id) n
+            FROM show s) m
+        WHERE ss.show_id = m.idul
+        ORDER BY total_price DESC;  --ordonam dupa incasari
+            
+        --variabile pentru datele din cursorul 'cursor_type'
+        v_t_id        type.type_id%TYPE;
+        v_t_name      type.type_name%TYPE;
+        v_t_nr        show.show_id%TYPE;
+            
+        --variabile pentru datele din cursorul 'cursor_show'
+        v_s_id        show.show_id%TYPE;
+        v_s_title     show.show_title%TYPE;
+        v_s_type_id   show.type_id%TYPE;
+        v_s_price     NUMBER;
+        total         NUMBER;    --variabila pentru calculul incasarilor per gen
+    BEGIN
+        --cursoare imbricate
+        OPEN cursor_type;   --deschidem cursorul 'cursor_type'
+        
+        LOOP
+            FETCH cursor_type 
+            INTO v_t_id, v_t_name, v_t_nr;  --salvam informatiile in variabile
+            
+            EXIT WHEN cursor_type%notfound; --parcurgem intreg cursorul de genuri
+                                            --si pentru fiecare gen afisam informatiile stocate in
+                                            --cursorul 'cursor_show'
+                                            
+            dbms_output.put_line('Genul spectacolului: ' || v_t_name);
+            dbms_output.put_line('============================');
+            
+            total := 0; --suma este initial zero
+            
+            IF v_t_nr = 0 THEN
+                --daca nu avem spectacole dintr-un gen afisam un mesaj corespunzator
+                dbms_output.put_line('Nu avem filme la această categorie.');
+            ELSE
+                OPEN cursor_show;   --deschidem cursorul 'cursor_show'
+                
+                LOOP
+                    FETCH cursor_show 
+                    INTO v_s_id, v_s_title, v_s_type_id, v_s_price; --salvam informatiile in variabile
+                    EXIT WHEN cursor_show%notfound;                 -- parcurgem intreg cursorul cu angajati
+                    
+                    --afisam informatiile corespunzatoare genului la care am ajuns
+                    IF v_t_id = v_s_type_id THEN
+                        dbms_output.put_line(v_s_title || ' ' || v_s_price || ' RON');
+                        total := total + v_s_price; --aduna incasarile totale ale genului
+                    END IF;
+                END LOOP;
+                
+                CLOSE cursor_show;  --inchidem cursorul 'cursor_show'
+            END IF;
+            
+            --afisam incasarile totale ale genului
+            dbms_output.put_line('----------');
+            dbms_output.put_line('Total incasari: ' || total);
+            dbms_output.new_line;
+        END LOOP;
+    
+        CLOSE cursor_type;  --inchidem cursorul 'cursor_type'
+    END ex_7;
+    
+    FUNCTION ex_8 (
+        v_title show.show_title%TYPE    --primeste ca parametru numele spectacolului
+    )
+     RETURN rezultat_ex8 --returneaza un rezultat de tipul 'rezultat_ex8'
+     IS
+        v_rezultat rezultat_ex8:= rezultat_ex8(); 
+        
+        --cursor ce contine data rezervarii biletelor la spectacol si varsta spectatorilor
+        CURSOR c IS
+            SELECT r.booking_date, round((booking_date - birth_date) / 365.25, 0)
+            FROM show s, reservation r, client c
+            WHERE s.show_id = r.show_id
+                AND c.client_id = r.client_id
+                AND s.show_id = (SELECT show_id
+                                FROM show
+                                WHERE upper(v_title) = upper(show_title))   --gasim id-ul spectacolului primit ca parametru
+            ORDER BY booking_date;  --ordonam in functie de data rezervarii
+        
+        --vector ce va pastra nr de bilete pentru fiecare luna
+        TYPE t_aparitii IS VARRAY(12) OF NUMBER(6);
+        
+        --variabile pentru accesarea datelor din cursor
+        v_booking    reservation.booking_date%TYPE;  --memoreaza data achizitionarii unui bilet
+        v_age        NUMBER; --memoreaza varsta unui participant
+        
+        --vector initializat cu 0 bilete pentru fiecare luna 
+        v_aparitii   t_aparitii := t_aparitii(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        
+        maxim        NUMBER := -1; --maximul de bilete vandute
+        c_luna       NUMBER := 0;  --numarul de luni cu acelasi maxim
+        media        NUMBER := 0;  --suma varstelor
+        cc           NUMBER := 0;  --cate persoane avem
+        i            NUMBER;
+        k            NUMBER;
+        
+        --variabila ce va verifica daca spectacolul a avut sau nu bilete vandute
+        if_record    BOOLEAN := false;
+    BEGIN 
+        --tratare exceptie NO_DATA_FOUND
+        SELECT COUNT(1)
+        INTO k
+        FROM show
+        WHERE upper(v_title) = upper(show_title);
+    
+        IF k <= 0 THEN
+            RAISE no_data_found;
+        END IF;
+    
+        OPEN c; --deschidem cursorul
+        
+        LOOP
+            FETCH c INTO v_booking, v_age;  --pastram datele de pe o linie in doua variabile        
+            EXIT WHEN c%notfound;           --ne oprim cand parcurgem tot cursorul
+            
+            if_record := true;  --nu s-a inchis cursorul => inseamna ca avem date (s-au vandut bilete)
+            
+            i := to_number(to_char(extract(MONTH FROM v_booking))); --extragem luna din data rezervarii
+            v_aparitii(i) := v_aparitii(i) + 1;                     --crestem nr de bilete vandute in luna respectiva
+    
+            --cautam maximul de bilete vandu-te intr-o luna
+            IF ( maxim < v_aparitii(i) ) THEN
+                maxim := v_aparitii(i);
+            END IF;
+            
+            --calculam nr de persoane care au fost la spectacol si suma varstelor
+            IF ( v_age IS NOT NULL ) THEN
+                cc := cc + 1;
+                media := media + to_number(v_age);
+            END IF;
+        END LOOP;
+    
+        CLOSE c;    --inchidem cursorul
+    
+        --adaugam fiecare luna care are nr maxim de bilete vandute
+        --in lista 'f_luna'
+        FOR j IN v_aparitii.first..v_aparitii.last LOOP 
+            IF ( v_aparitii(j) = maxim ) THEN
+                v_rezultat.extend;
+                c_luna := c_luna + 1;
+                v_rezultat(c_luna) := j;
+            END IF;
+        END LOOP;
+    
+        --returnam lista cu lunile cu nr maxim de bilete vandute si
+        --media varstei spectatorilor 
+        --(asta daca au existat bilete vandute la spectacol)
+        IF if_record = false THEN
+            RETURN rezultat_ex8(0, 0);
+        END IF;
+        
+        v_rezultat.extend;
+        c_luna := c_luna + 1;
+        v_rezultat(c_luna) := round(media / cc, 2);
+        
+        RETURN v_rezultat;
+        
+    EXCEPTION
+        WHEN no_data_found THEN
+            raise_application_error(-20001, 'Nu exista spectacol cu titlul dat.');
+        WHEN OTHERS THEN
+            raise_application_error(-20002, 'Alta eroare!');
+    END ex_8;
+    
+    PROCEDURE ex_9 (
+        v_nume_teatru theater.theater_name%TYPE --primeste ca parametru numele teatrului
+    )  
+     IS
+        
+        --cursor ce contine id-ul producatorilor si id-ul tipului
+        --spectacolelor ce se joaca la teatrul citit
+        CURSOR c_1 IS
+            SELECT p.prod_id   prod, t.type_id   typess
+            FROM theater t, collaboration c, show s, producers p, type t
+            WHERE c.theater_id = t.theater_id
+                AND c.show_id = s.show_id
+                AND s.prod_id = p.prod_id
+                AND t.theater_id = (SELECT theater_id
+                                    FROM theater
+                                    WHERE upper(theater_name) = upper(v_nume_teatru)
+                                    )   --obtinem id-ul spectacolului citit
+                AND s.type_id = t.type_id
+            ORDER BY
+                s.show_id; --ordonam credcator dupa id-ul spectacolului 
+        
+        --cursor ce obtine id-ul, directorul si scenaristul unei echipe de producatori
+        --impreuna cu numarul de spectacole pe care le desfasoara de tipul 'c_specific'
+        --tipul de specatcole pe care trebuie sa le numere le primeste prin intermediul 
+        --unui parametru
+        CURSOR c_2 (c_specific NUMBER) IS
+            SELECT p.prod_id id2, MAX(p.director) director, MAX(p.screenwriter) screenw, COUNT(type_id) nr
+            FROM producers   p, show        s
+            WHERE p.prod_id = s.prod_id AND s.type_id = c_specific
+            GROUP BY p.prod_id;
+        
+        TYPE tablou_imbricat IS TABLE OF NUMBER(4);
+        
+        --tablou cu id-urile producatorilor
+        t_prod          tablou_imbricat := tablou_imbricat();
+        --tablou cu id-urile genurilor de spectacole
+        t_type          tablou_imbricat := tablou_imbricat();
+        --tablou pentru a salva numarul de aparitii al valorilor din 't_prod'
+        apar_p          tablou_imbricat := tablou_imbricat();
+        --tablou pentru a salva numarul de aparitii al valorilor din 't_type'
+        apar_t          tablou_imbricat := tablou_imbricat();
+        
+        max_prod        NUMBER := -1;   --salvam id-ul maxim de producatori pentru a extinde lista 'apar_p'
+        max_type        NUMBER := -1;   --salvam id-ul maxim de tipuri pentru a extinde lista 'apar_t'
+        maxim           NUMBER := -1;   --salvam numarul maxim de spectacole la care avem aceeasi producatori in teatrul citit
+        specific        NUMBER := -1;   --salvam id-ul tipului de spectacole care se gasesc cel mai mult la teatrul citit
+        specific_m      NUMBER := -1;   --
+        specific_nume   VARCHAR2(50);   --salvam numele tipului in functie de id-ul gasit
+        k               NUMBER := 0;
+        
+        nimic           BOOLEAN := FALSE;   --verifica daca avem sau nu echipe de profucatori
+        
+        if_found_rec    BOOLEAN := FALSE;   --verifica daca teatrul introdus are sau nu spectacole
+        not_found_rec   EXCEPTION;          --exceptie in cazul in care teatrul nu are spectacole
+    BEGIN 
+        --vedem de cate ori apare numele teatrului citit in baza de date
+        SELECT COUNT(1)
+        INTO k
+        FROM theater
+        WHERE upper(theater_name) = upper(v_nume_teatru);
+    
+        IF k <= 0 THEN
+            RAISE no_data_found;    --tratare exceptie NO_DATA_FOUND
+        ELSIF k > 1 THEN
+            RAISE too_many_rows;    --tratare exceptie TOO_MANY_ROWS
+        END IF;
+    
+        k := 0;  --numaram cate elemente avem in cursorul c_1
+        FOR i IN c_1 
+        LOOP
+            if_found_rec := TRUE;   --daca avem spectacole := TRUE
+            k := k + 1;
+            t_prod.extend;          --extindem tabloul
+            t_prod(k) := i.prod;    --adaugam elementul din cursor
+            
+            --salvam id-ul maxim de producator
+            IF ( max_prod < i.prod ) THEN
+                max_prod := i.prod;
+            END IF;
+    
+            t_type.extend;          --extindem tabloul
+            t_type(k) := i.typess;  --adaugam elementul din cursor
+            
+            --salvam id-ul maxim de tip
+            IF ( max_type < i.typess ) THEN
+                max_type := i.typess;
+            END IF;
+    
+        END LOOP;
+        
+        --daca nu am avut date/spectacole atunci exceptie
+        IF ( if_found_rec = FALSE ) THEN
+            RAISE not_found_rec;
+        END IF;
+        
+        --initializam tabloul de aparitii 'apar_p' cu zero 
+        FOR i IN 1..max_prod LOOP
+            apar_p.extend;
+            apar_p(i) := 0;
+        END LOOP;
+        
+        --initializam tabloul de aparitii 'apar_t' cu zero 
+        FOR i IN 1..max_type LOOP
+            apar_t.extend;
+            apar_t(i) := 0;
+        END LOOP;
+        
+        --populam tabloul de aparitii 'apar_p' in functie de datele din 't_prod'
+        FOR i IN t_prod.first..t_prod.last LOOP
+            apar_p(t_prod(i)) := apar_p(t_prod(i)) + 1;
+    
+            IF ( maxim < apar_p(t_prod(i)) ) THEN
+                maxim := apar_p(t_prod(i));
+            END IF;
+        END LOOP;
+        
+        --populam tabloul de aparitii 'apar_t' in functie de datele din 't_type'
+        FOR i IN t_type.first..t_type.last LOOP
+            apar_t(t_type(i)) := apar_t(t_type(i)) + 1;
+    
+            IF ( specific_m < apar_t(t_type(i)) ) THEN
+                specific_m := apar_t(t_type(i));
+                specific := t_type(i);
+            END IF;
+        END LOOP;
+        
+        --salvam in 'specific_nume' denumirea tipului gasit
+        SELECT type_name
+        INTO specific_nume
+        FROM type
+        WHERE type_id = specific;
+        
+        --afisam ce valoare are 'specific' si ce valoare are 'maxim' 
+        dbms_output.put_line('Teatrul "' || v_nume_teatru || '" are:');
+        dbms_output.put_line('- specificul: ' || specific_nume || ';');
+        dbms_output.put_line('- maximul de spectacole ale acelorasi producatori ' || maxim || ';');
+        dbms_output.put_line('Lista producatorilor ' || 'cu mai mult de '
+                             || maxim || ' spectacole '
+                             || specific_nume || ':');
+        
+        --parcurgem cursorul 'c_2' pentru a obtine tabloul producatorilor care
+        --au mai mult de 'maxim' spectacole de tipul 'specific' gasit
+        FOR i IN c_2(specific) LOOP 
+            IF ( i.nr >= maxim ) THEN
+                nimic := TRUE;  --devine true daca avem echipe de producatori
+                dbms_output.put_line(i.director || ' si ' || i.screenw);
+            END IF;
+        END LOOP;
+        
+        --daca nu avem echipe de producatori afisam mesajul...
+        IF ( nimic = FALSE ) THEN
+            dbms_output.put_line('Nu avem echipe de producatori.');
+        END IF;
+    
+    EXCEPTION
+        WHEN no_data_found THEN
+            raise_application_error(-20001, 'Nu exista teatru cu titlul dat.');
+        WHEN too_many_rows THEN
+            raise_application_error(-20002, 'Mai multe teatre cu acelasi nume.');
+        WHEN not_found_rec THEN
+            raise_application_error(-20003, 'Teatrul citit nu are spectacole.');
+    END ex_9;
+end pachet_ex_13;
+/
+
+--APELARE
+--ex6
+/
+BEGIN
+    pachet_ex_13.ex_6(1);
+END;
+/
+
+--ex7
+/
+BEGIN
+    pachet_ex_13.ex_7();
+END;
+/
+
+--ex8
+DECLARE
+    v_title   show.show_title%TYPE := '&p_title';   --citim titlul unui spectacol
+    raspuns   pachet_ex_13.rezultat_ex8; --declaram o variabila de tipul returnat de functie 'rezultat_ex8'
+    i         NUMBER;
+BEGIN
+    raspuns := pachet_ex_13.ex_8(v_title);  --apelam functia 
+    
+    --afisam titlul spectacolului citit
+    dbms_output.put_line('Lunile cu cele mai multe vanzari pentru spectacolul "' || v_title || '" sunt:');
+    
+    --afisam lunile gasite
+    FOR i IN raspuns.first..raspuns.last-1 LOOP 
+        dbms_output.put_line('luna a ' || raspuns(i) || '-a');
+    END LOOP;
+    
+    --afisam media varstelor spectatorilor
+    dbms_output.put_line('Varsta medie a spectatorilor este de '
+                         || raspuns(raspuns.last)
+                         || ' ani');
+END;
+/
+
+--ex9
+/
+DECLARE
+    nume theater.theater_name%TYPE:='&p_nume';
+BEGIN
+    pachet_ex_13.ex_9(nume);
+--    Teatrul Judetean Brasov
+--    Teatrul Nottara
+--    Teatrul Artcub
+--    asd
+--    Teatrul Guguta
+--    Verde
+END;
+/
+
+--EX.14
+--Pentru apelarea functiei 'procedura_inceput' din pachetul 'pachet_ex_14'
+--cu parametrul unui producator se va afisa numele producatorilor urmat de
+--categoriile de spectacole unde filmele lor se afla in top 3 cel mai scump bilet.
+--Fiecare categorie este urmata de suma, in total, al preturilor unui bilet de la spectacole.
+/
+CREATE OR REPLACE PACKAGE pachet_ex_14 AS
+    --tablou imbricat
+    TYPE tablou_imbricat IS TABLE OF NUMBER(4);
+    
+    --tablou imbricat
+    TYPE tablou_nume IS TABLE OF VARCHAR2(50);
+    
+    PROCEDURE procedura_inceput (id_producatori number);
+    
+    function functie_apare(
+        lista tablou_imbricat,  --topul
+        producatori number      --id-ul producatorilor
+    ) return boolean;
+    
+    function functie_suma(
+        lista tablou_imbricat
+    ) return number;
+    
+    procedure procedura_afisare(
+        producatori number,
+        lista_nume tablou_nume,
+        lista_sume tablou_imbricat
+    );
+END pachet_ex_14;
+/
+CREATE OR REPLACE PACKAGE BODY pachet_ex_14 AS
+    --procedura ce gaseste primele 2 cela mai scumpe spectacole,
+    --din fiecare categorie;
+    --functia primeste ca parametru id-ul unei echipe de producatori
+    PROCEDURE procedura_inceput (
+        id_producatori number
+    )
+    IS
+        --cursor cu tipurile de spectacole
+        CURSOR cursor_type IS(
+            SELECT t.type_id, MAX(t.type_name), COUNT(s.show_id)
+            FROM type t, show s
+            WHERE t.type_id = s.type_id (+)
+            GROUP BY t.type_id
+        );
+        
+        --cursor cu spectacolele
+        CURSOR cursor_show IS
+        SELECT show_id, type_id, price
+        FROM show
+        ORDER BY price desc;
+        
+        --variabile pentru datele din cursorul 'cursor_type'
+        v_t_id        type.type_id%TYPE;
+        v_t_name      type.type_name%TYPE;
+        v_t_nr        show.show_id%TYPE;
+        
+        --variabile pentru datele din cursorul 'cursor_show'
+        v_s_id        show.show_id%TYPE;
+        v_s_type_id   show.type_id%TYPE;
+        v_s_price     NUMBER;
+        
+        --tablou cu specatcolele din fiecare top
+        lista       tablou_imbricat := tablou_imbricat();
+        --tablou cu sumele fiecarui top
+        lista_sume  tablou_imbricat := tablou_imbricat();
+        --tablou cu denumirea categoriei fiecarui top
+        lista_nume  tablou_nume := tablou_nume();
+        
+        i number;       --verifica ca fiecare top sa fie de maxim 2 valori
+        k number:=0;    --nr de elemente din 'lista_sume' si 'lista_nume'
+        nr number;      --salveaza suma din fiecare categorie
+        
+        verificare number:=0;   --variabila pt verificare no_data_found
+    
+    BEGIN
+        --verificare no_data_found
+        SELECT COUNT(1)
+        INTO verificare
+        FROM producers
+        WHERE prod_id = id_producatori;
+    
+        IF verificare <= 0 THEN
+            RAISE no_data_found;
+        END IF;
+        
+        OPEN cursor_type;   --deschidere cursor 'cursor_type'
+        LOOP
+            FETCH cursor_type INTO
+                v_t_id,
+                v_t_name,   
+                v_t_nr;      
+            EXIT WHEN cursor_type%notfound;
+            
+            IF v_t_nr >= 1 THEN --daca avem topuri cream un top
+                i:=0;   --zero elemente in top
+                OPEN cursor_show;   --deschidem cursorul 'cursor_show'
+                
+                LOOP
+                    FETCH cursor_show 
+                    INTO v_s_id, v_s_type_id, v_s_price; --salvam informatiile in variabile
+                    EXIT WHEN cursor_show%notfound;      -- parcurgem intreg cursorul cu angajati
+                    
+                    --salvam informatiile corespunzatoare genului la care am ajuns
+                    --in 'lista'
+                    IF v_t_id = v_s_type_id and i<2 THEN
+                        i:=i+1;
+                        lista.extend();
+                        lista(i) := v_s_id;
+                    END IF;
+                END LOOP;
+            
+                CLOSE cursor_show;  --inchidem cursorul 'cursor_show'
+                
+                --daca spectacolele producatorilor sunt in top
+                if(pachet_ex_14.functie_apare(lista,id_producatori) = true) then
+                    --aflam suma si o salvam in 'lista_sume'
+                    --salvam numele categoriei de spectacol
+                    nr:= pachet_ex_14.functie_suma(lista);
+                    k:=k+1;
+                    
+                    lista_nume.extend;
+                    lista_nume(k) := v_t_name;
+                    
+                    lista_sume.extend;
+                    lista_sume(k) := nr;
+                end if;
+                lista.delete;   --golim tabloul pt urmatorul top
+            END IF;
+        END LOOP;
+        CLOSE cursor_type;  --inchidem cursorul 'cursor_type'
+        
+        --afisam
+        pachet_ex_14.procedura_afisare(id_producatori, lista_nume, lista_sume);
+        
+    EXCEPTION
+        when no_data_found then
+            raise_application_error(-20001, 'Nu exista producatori cu id-ul dat.'); 
+    END procedura_inceput;
+
+
+    --functia verifica daca producatorii introdusi se afla in
+    --unul dintre topuri
+    function functie_apare(
+        lista tablou_imbricat,  --topul
+        producatori number      --id-ul producatorilor
+    )
+    return boolean
+    is 
+    begin
+        --cautam id-ul producatorilor in cursorul cu spectacole din top
+        for j in lista.first..lista.last loop
+            for i in (select show_id sh
+                        from show
+                        where prod_id = producatori
+                        ) loop
+                --daca gasim o aparitie returnam 'true'
+                if(lista(j) = i.sh) then
+                    return true;
+                end if;
+            end loop;
+        end loop;
+        
+        --daca nu gasim => 'false'
+        return false;
+    end functie_apare;
+    
+    --functia returneaza suma preturilor biletelor pentru fiecare spectacol 
+    function functie_suma(
+        lista tablou_imbricat
+    )
+    return number
+    is 
+        suma number:=0; --se calculeaza suma
+    
+        nr number:=0;   --se salveaza pretul
+    begin
+        for j in lista.first..lista.last loop
+            select price
+            into nr
+            from show
+            where show_id = lista(j);
+            
+            suma:=suma+nr;
+        end loop;
+        return suma;--returnam suma
+    
+    end functie_suma;
+    
+    --procedura pentru afisarea informatiilor 
+    procedure procedura_afisare(
+        producatori number,
+        lista_nume tablou_nume,
+        lista_sume tablou_imbricat
+    )
+    is
+        nume varchar2(200); --numele producatorilor
+    
+    begin
+        --gasim nume producatorilor dupa is
+        select director||' si '||screenwriter
+        into nume
+        from producers
+        where prod_id = producatori;
+        
+        --daca se afla in intr-unul din topuri afisam informatiile
+        if(lista_nume.count > 0) then
+            dbms_output.put_line('Producatorii '||nume||' se afla printre primii 3 la categoriile: ' );
+            
+            for j in lista_nume.first..lista_nume.last loop
+                dbms_output.put_line('- '||lista_nume(j)||' suma preturilor spectacolelor din top: '||lista_sume(j));
+            end loop;
+        else 
+            --altfel afisam...
+            dbms_output.put_line('Producatorii introdusi NU se afla in top 3 la nicio categorie. ');
+        end if;
+        dbms_output.new_line();
+    end procedura_afisare;
+END pachet_ex_14;
+/
+begin
+    pachet_ex_14.procedura_inceput(6);
+end;
+/
